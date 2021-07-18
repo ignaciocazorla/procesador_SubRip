@@ -134,3 +134,12 @@ struct arreglo_opciones *recuperar_args(int argc, char **argv){
 	
 	return arreglo;
 }
+
+
+void liberar_mem_args(struct arreglo_opciones *a_opciones){
+	for(int i = 0; i <= a_opciones->ocupado ;i++){
+		free(a_opciones->opciones[i].args);
+		free((void *) &(a_opciones->opciones[i]));
+	}
+	free(a_opciones);
+}
