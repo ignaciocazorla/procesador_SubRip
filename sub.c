@@ -41,7 +41,7 @@ struct arreglo_sub *inicializar(FILE *entrada)
 			   &i_hh, &i_mm, &i_ss, &i_ms,
 			   &f_hh, &f_mm, &f_ss, &f_ms);
 		dato->inicio = tm_to_millisec(i_hh, i_mm, i_ss, i_ms);
-		dato->fin = tm_to_millisec(f_hh, f_mm, f_ss, i_ms);
+		dato->fin = tm_to_millisec(f_hh, f_mm, f_ss, f_ms);
 		dato->texto = malloc(sizeof(char) * 100);
 		while (3 != strcasecmp((fgets(dato1, 100, entrada)), "\n"))
 		{
@@ -58,32 +58,22 @@ struct arreglo_sub *inicializar(FILE *entrada)
 	return arreglo;
 }
 
-// CREO QUE NO ESTOY PUDIENDO METER LA INFORMACION EN EL ARCHIVO DE SALIDA PORQUE HAY INCOMPATIBILIDAD EN LA FORMA EN QUE LO GUARDE Y EN LA FORMA EN QUE ESTOY TRATANDO DE RECUPERAR LA INFORMACION(EN EL ARCHIVO DE SALIDA ME QUEDAN DIRECCIONES A LA INFORMACION NADA MAS)
 void crear_salida(struct arreglo_sub *sub, FILE **salida)
 {
+	// dos estructuras t_tiempo, para inicio y fin
 	t_tiempo *inicio = (t_tiempo *)calloc(1, sizeof(t_tiempo));
 	t_tiempo *fin = (t_tiempo *)calloc(1, sizeof(t_tiempo));
-	printf("Entro a guardar la estructura.");
-	getchar();
+	
 	for (int i = 0; i < sub->ocupado - 1; i++)
 	{
 		inicio = millisec_to_tm(sub->a[i].inicio);
 		fin = millisec_to_tm(sub->a[i].fin);
+
 		fprintf(*salida, "%d\n", sub->a[i].indice); 
 		fprintf(*salida, "%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n", 
-						inicio->hh,
-						inicio->mm,
-						inicio->ss,
-						inicio->ms,
-						
-						fin->hh,
-						fin->mm,
-						fin->ss,
-						fin->ms
+						inicio->hh, inicio->mm, inicio->ss, inicio->ms,
+						fin->hh	  , fin->mm   , fin->ss   , fin->ms
 				);
-		//fputc('\t',*salida);
 		fprintf(*salida, "%s\n", sub->a[i].texto);
 	}
-
-	//en la salida quedan algunos errores
 }
