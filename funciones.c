@@ -17,7 +17,7 @@ struct arreglo_sub * abrir(void * s,FILE * entrada){  //tengo que pasar la entra
 void salir(void * s,FILE ** salida){
 	printf("El archivo de salida va a ser: %s",(char *) s);
 	getchar();
-	*salida = fopen ((char *)s,"a"); 
+	*salida = fopen ((char *)s,"w+"); 
 	if(*salida == NULL){
 		fprintf(stderr,"No se pudo abrir el archivo %s.\n",(char *)s);
 	}
