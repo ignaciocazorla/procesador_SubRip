@@ -35,9 +35,6 @@ struct arreglo_opciones{
 };
 
 
-
-
-
-struct arreglo_opciones *recuperar_args(int argc, char **argv);
+void recuperar_args(struct arreglo_opciones * arreglo_opciones, int argc, char **argv);
 
 #endif

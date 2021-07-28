@@ -7,12 +7,15 @@
 
 
 int main(int argc,char * argv[]){
-	struct arreglo_opciones * arreglo = recuperar_args(argc,argv);
+	struct arreglo_opciones arreglo_opciones;
+	recuperar_args(&arreglo_opciones, argc, argv);
 	printf("salio al main");
 	getchar();
-	for(int i = 0; i < arreglo->ocupado;i++){
-		printf("%d",arreglo->opciones[i].opcion);
-	}
-	process_operation(arreglo);
-	free(arreglo);
+	
+	//for(int i = 0; i < arreglo_opciones.ocupado;i++){
+	//	printf("%d",arreglo_opciones.opciones[i].opcion);
+	//}
+	process_operation(&arreglo_opciones);
+
+	liberar_mem_args(&arreglo_opciones);
 }
