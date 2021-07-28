@@ -12,9 +12,10 @@ struct arreglo_sub *init_arreglo(struct arreglo_sub *array, int initial_size)
 	return array;
 }
 
+// inserta un subtítulo en el arreglo de subtítulos en memoria
 struct arreglo_sub *insert_sub(struct arreglo_sub *array, struct sub *dato)
 {
-	// si está lleno, duplica el tamaño del arreglo de subtítulos
+	// si el arreglo de subtítulos está lleno, duplica su tamaño
 	if (array->ocupado == array->tamanio)
 	{
 		array->tamanio *= 2;
@@ -24,7 +25,8 @@ struct arreglo_sub *insert_sub(struct arreglo_sub *array, struct sub *dato)
 	array->a[array->ocupado++] = *dato;
 	return array;
 }
-// llena el arreglo inicial con los subtítulos del archivo *entrada
+
+// llena el arreglo inicial con los subtítulos del archivo "entrada"
 struct arreglo_sub *inicializar(FILE *entrada)
 {
 	// inicializa arreglo de subtítulos
@@ -82,10 +84,10 @@ void crear_salida(struct arreglo_sub *array, FILE **salida)
 	t_tiempo *inicio = (t_tiempo *)calloc(1, sizeof(t_tiempo));
 	t_tiempo *fin = (t_tiempo *)calloc(1, sizeof(t_tiempo));
 	
-	for (int i = 0; i < array->ocupado - 1; i++)
+	for (int i = 0; i < array->ocupado; i++)
 	{
-		inicio = millisec_to_tm(array->a[i].inicio);
-		fin = millisec_to_tm(array->a[i].fin);
+		millisec_to_tm(array->a[i].inicio, inicio);
+		millisec_to_tm(array->a[i].fin, fin);
 
 		fprintf(*salida, "%d\n", array->a[i].indice); 
 		fprintf(*salida, "%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n", 
@@ -94,4 +96,7 @@ void crear_salida(struct arreglo_sub *array, FILE **salida)
 				);
 		fprintf(*salida, "%s\n", array->a[i].texto);
 	}
+
+	free(inicio);
+	free(fin);
 }

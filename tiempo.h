@@ -11,6 +11,6 @@ typedef struct {
 
 size_t * tm_to_millisec(short hs, short mins, short segs, short msegs);
 
-t_tiempo * millisec_to_tm(size_t millis);
+void millisec_to_tm(size_t millis, t_tiempo* tm);
 
 #endif

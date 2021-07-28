@@ -24,15 +24,13 @@ size_t * tm_to_millisec(short hs, short mins, short segs, short msegs) {
   }
   return total += msegs;
 }
-
-t_tiempo * millisec_to_tm(size_t millis){
+void millisec_to_tm(size_t millis, t_tiempo* tm){
 	int tmp;
-  t_tiempo *tm = (t_tiempo*)calloc(1, sizeof(t_tiempo));
   tm->hh = millis / 3600000;
   tmp = millis % 3600000;
   tm->mm = tmp / 60000;
   tmp = tmp % 60000;
   tm->ss = tmp / 1000;
   tm->ms = tmp % 1000;
-  return tm;
+  return;
 }
