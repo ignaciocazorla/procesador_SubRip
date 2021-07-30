@@ -37,6 +37,12 @@ void cadena_a_entero(void ** n, char * cadena){
 	*n = num;
 }
 
+void agregar_sub(void ** s){
+	struct sub * sub = malloc (sizeof(struct sub));
+	sub->indice = 0;
+	*s = sub;
+}
+
 void insertar_opciones(struct arr * dato, int opt, int cantidad, ...){	
 	struct arr s_arr = *dato;
 
@@ -44,33 +50,26 @@ void insertar_opciones(struct arr * dato, int opt, int cantidad, ...){
 	va_start(ap,cantidad);
 
 	s_arr.opcion = opt;
-	
-	if (opt == 1){
-		//char * num = va_arg(ap,char *);
-		//int * n = malloc(sizeof(int));
-		//*n = atoi(num);
-		//s_arr.args = n;
-		cadena_a_entero(&(s_arr.args),va_arg(ap,char *));
-	}
-	if(opt == 2){ 
-		struct sub * s = malloc (sizeof(struct sub));
-		s->indice = 0;
-	
-		cadena_a_entero((void *) &(s->inicio),va_arg(ap,char *));
-		cadena_a_entero((void *) &(s->fin),va_arg(ap,char *));
 
-		char * buf = va_arg(ap,char *);
-		s->texto = malloc(strlen(buf) + 1);
-		strcpy(s->texto,buf);
-		s_arr.args=s;
-
+	switch (opt)
+	{
+		case BORRAR:
+			cadena_a_entero(&(s_arr.args),va_arg(ap,char *));
+			break;
+		case INSERTAR:
+			agregar_sub(&s_arr.args);
+			cadena_a_entero((void *) &(((struct sub *) s_arr.args)->inicio) ,va_arg(ap,char *));
+			cadena_a_entero((void *) &(((struct sub *) s_arr.args)->fin),va_arg(ap,char *));
+			agregar_cadena((void *) &(((struct sub *) s_arr.args)->texto),va_arg(ap,char *));
+			break;
+		case VALIDAR:
+			s_arr.args = NULL;
+			break;
+		case IN: case OUT:
+			agregar_cadena(&(s_arr.args),va_arg(ap,char *));
+			break;
 	}
-	if(opt == 3){
-		s_arr.args = NULL;
-	}
-	if(opt == 4 || opt == 5){
-		agregar_cadena(&(s_arr.args),va_arg(ap,char *));
-	}
+	
 	*dato = s_arr;
 
 	va_end(ap);	
@@ -83,34 +82,33 @@ void insert_operand(struct arreglo_opciones *a, struct arr *dato){
 	(*a).opciones[(*a).ocupado++] = *dato;
 }
 
+void agregar_filename(struct arreglo_opciones * a, int * validador, int opt, char * filename, char * err_msg){
+	struct arr dato;
+	if((*validador) == 0){
+		insertar_opciones(&dato, opt , 1, filename);
+		insert_operand(a, &dato);
+		(*validador)++;
+	}
+	else{
+		terminar_con_error(err_msg, 1, a);
+	}
+}
+
+
 // Primer recorrido para recuperar los argumentos -f y -o (en caso que haya).
 void procesar_args_filenames(struct arreglo_opciones * arreglo_opciones, int argc, char **argv){
 
 	int entrada = 0 ,salida = 0;
-	struct arr dato;
 	for(int i = 0; i < argc; i++){
-		
+
 		// Para agregar -f
 		if(strcasecmp (argv[i],"-f") == 0){
-			if(entrada == 0){
-				insertar_opciones(&dato, 4, 1, argv[i+1]);
-				insert_operand(arreglo_opciones, &dato);
-				entrada++;
-			}
-			else{
-				terminar_con_error("Solo se puede ingresar una vez el parametro -f [archivo].\n", 1, arreglo_opciones);
-			}
+			agregar_filename(arreglo_opciones, &entrada, IN, argv[i+1],"Solo se puede ingresar una vez el parametro -f [archivo].\n");
 		}
-	
-		// Para agregar -o
-		if(strcasecmp (argv[i],"-o") == 0){
-			if(salida == 0){
-				insertar_opciones(&dato, 5, 1, argv[i+1]);
-				insert_operand(arreglo_opciones, &dato);
-				salida++;
-			}
-			else {
-				terminar_con_error("Solo se puede ingresar una vez el parametro -o [archivo].\n", 1, arreglo_opciones);
+		else{ 
+			// Para agregar -o
+			if(strcasecmp (argv[i],"-o") == 0){
+				agregar_filename(arreglo_opciones, &salida, OUT, argv[i+1],"Solo se puede ingresar una vez el parametro -o [archivo].\n");
 			}
 		}
 	}
@@ -124,18 +122,18 @@ void procesar_args_filenames(struct arreglo_opciones * arreglo_opciones, int arg
 void procesar_operaciones(struct arreglo_opciones * arreglo_opciones, int argc, char **argv){
 	struct arr dato;
 	for(int i = 0; i < argc; i++){
-		int optindex;	
-		for(optindex = 0; optindex < 3; optindex++){	
-			if(strcasecmp(argv[i],opc[optindex])== 0){
-				if(optindex == 0){		
-					insertar_opciones(&dato,  optindex + 1, 1, argv[i+1]);
+		for(int optindex = 0; optindex < 3; optindex++){	
+			if(strcasecmp(argv[i],opc[optindex]) == 0){
+				switch (optindex)
+				{
+				case 0: case 2:
+					insertar_opciones(&dato, (optindex + 1), 1, argv[i+1]);
+					break;
+				case 1:
+					insertar_opciones(&dato, INSERTAR , 3, argv[i+1], argv[i+2], argv[i+3]);
+					break;
 				}
-				if(optindex == 1){
-					insertar_opciones(&dato,  optindex + 1, 3, argv[i+1], argv[i+2], argv[i+3]);
-				}
-				if(optindex == 2){
-					insertar_opciones(&dato,  optindex + 1, 1, argv[i+1]);
-				}
+
 				insert_operand(arreglo_opciones, &dato);
 			}
 		}
@@ -150,28 +148,39 @@ void recuperar_args(struct arreglo_opciones * arreglo_opciones, int argc, char *
 	procesar_operaciones(arreglo_opciones, argc, argv);
 }
 
+void liberar_opt_insertar(struct arr * dato){
+	void * s = dato->args;
+	struct sub * sub = (struct sub *) s;
+	int * inicio = (int *) sub->inicio;
+	int * fin = (int *) sub->fin;
+	free(inicio);
+	free(fin);
+	free(sub->texto);
+	free(sub);
+}
+
+void liberar_opt_borrar(struct arr * dato){
+	void * n = dato->args;
+	int * nump = (int *) n;
+	free(nump);
+}
+
 void liberar_arreglo_opciones(struct arreglo_opciones * arreglo_opciones){
+	struct arr arr_element;
 	for(int i = 0; i < arreglo_opciones->ocupado ;i++){
-		if(arreglo_opciones->opciones[i].args != NULL && arreglo_opciones->opciones[i].opcion != 1 && arreglo_opciones->opciones[i].opcion != 2){
-			free(arreglo_opciones->opciones[i].args);
-		}
+		arr_element = arreglo_opciones->opciones[i];
 
-		if(arreglo_opciones->opciones[i].opcion == 2){
-			void * s = arreglo_opciones->opciones[i].args;
-			struct sub * sub = (struct sub *) s;
-			printf("EL NUMERO DE SUB->INICIO : %d\n", (*(size_t *) sub->inicio));
-			printf("EL NUMERO DE SUB->FIN : %d\n", (*(size_t *) sub->fin));
-			printf("EL TEXTO DE SUB->TEXTO : %s\n", sub->texto);
-			free(sub->inicio);
-			free(sub->fin);
-			free(sub->texto);
-			free(sub);
-		}
-
-		if(arreglo_opciones->opciones[i].opcion == 1){
-			void * n = arreglo_opciones->opciones[i].args;
-			int * nump = (int *) n;
-			free(nump);
+		switch (arr_element.opcion)
+		{
+			case BORRAR:
+				liberar_opt_borrar(&arr_element);
+				break;
+			case INSERTAR:
+				liberar_opt_insertar(&arr_element);
+				break;
+			case IN: case OUT:
+				free(arr_element.args);
+				break;
 		}
 	}
 	free((*arreglo_opciones).opciones);
