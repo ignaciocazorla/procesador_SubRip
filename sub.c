@@ -76,14 +76,16 @@ void crear_salida(struct arreglo_sub *array, FILE **salida)
 
 	for (int i = 0; i < array->ocupado; i++)
 	{
-		millisec_to_tm(array->a[i].inicio, inicio);
-		millisec_to_tm(array->a[i].fin, fin);
+		if(array->a[i].indice != -1){
+			millisec_to_tm(array->a[i].inicio, inicio);
+			millisec_to_tm(array->a[i].fin, fin);
 
-		fprintf(*salida, "%d\n", array->a[i].indice);
-		fprintf(*salida, "%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n",
-				inicio->hh, inicio->mm, inicio->ss, inicio->ms,
-				   fin->hh,    fin->mm,    fin->ss,    fin->ms);
-		fprintf(*salida, "%s\n", array->a[i].texto);
+			fprintf(*salida, "%d\n", array->a[i].indice);
+			fprintf(*salida, "%02d:%02d:%02d,%03d --> %02d:%02d:%02d,%03d\n",
+					inicio->hh, inicio->mm, inicio->ss, inicio->ms,
+					   fin->hh,    fin->mm,    fin->ss,    fin->ms);
+			fprintf(*salida, "%s\n", array->a[i].texto);
+		}
 	}
 
 	free(inicio);

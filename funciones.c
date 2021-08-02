@@ -32,43 +32,44 @@ void modificar_salida(FILE **salida, struct arreglo_sub *arr_sub)
 	fclose(*salida);
 }
 
-/*struct arreglo_sub *borrar_indice(void *args, struct arreglo_sub *arr_sub)
+//struct arreglo_sub *borrar_indice(void *args, struct arreglo_sub *arr_sub)
+void borrar_indice(void *args, struct arreglo_sub *arr_sub)
 {
-	int indice = (int *)args;
+	int *indice = (int *) args;
 
-	int i = 1;
-	while (i <= arr_sub->ocupado)
+	int i = 0;
+	while (i < arr_sub->ocupado && *indice != arr_sub->a[i].indice)
 	{
-		if (arr_sub->a[i].indice == indice)
-		{
-			break;
-		}
-		i++;
+		//if (arr_sub->a[i].indice == indice)
+		//{
+		//	break;
+		//}
+		i+=1;
 	}
-	if (i >= arr_sub->ocupado && indice != arr_sub->a[i].indice)
+	if (*indice != arr_sub->a[i].indice)
 	{
-		printf("No se encontro el indice a borrar.");
+		printf("No se encontro el indice a borrar.\n");
 	}
 	else
 	{
+		// aplica borrado logico
+		arr_sub->a[i].indice = -1;
+		i++;
+		//se modifica el resto de los indices.
 		for (; i < arr_sub->ocupado; i++)
 		{
-			arr_sub->a[i + 1].indice = i + 1;
-			arr_sub->a[i] = arr_sub->a[i + 1];
+			arr_sub->a[i].indice = i;
 		}
 
-		arr_sub->ocupado = arr_sub->ocupado;
-		//free(arr_sub->a[arr_sub->ocupado]);
 	}
-	for (int i = 0; i <= arr_sub->ocupado; i++)
+	for (int i = 0; i < arr_sub->ocupado; i++)
 	{
 		printf("Indice:%d  \n Texto: %s \n", arr_sub->a[i].indice, arr_sub->a[i].texto);
 	}
 
-	return arr_sub;
 }
 
-struct arreglo_sub *insertar(void *args, struct arreglo_sub *arreglo)
+/*struct arreglo_sub *insertar(void *args, struct arreglo_sub *arreglo)
 {
 
 	struct sub *dato = (struct sub *)args;
@@ -189,6 +190,7 @@ void process_operation(struct arreglo_opciones *optargs)
 			{
 				printf("Borrando...\n");
 				//arr_sub = borrar_indice(optargs->opciones[i].args, arr_sub);
+				borrar_indice(optargs->opciones[i].args, &arr_sub);
 			}
 			else
 			{
