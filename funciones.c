@@ -3,17 +3,16 @@
 
 //aca creo la estructura que va a tener todos lso subtitulos
 //IDEA hacer punteros a funciones a esta funcion para reutilizar codigo
-struct arreglo_sub *abrir(void *s, FILE *entrada)
+void abrir(struct arreglo_sub * sub, void *s, FILE *entrada)
 { //tengo que pasar la entrada por referencia????
-	struct arreglo_sub *sub;
 	entrada = fopen((char *)s, "r+");
 	if (entrada == NULL)
 	{
 		fprintf(stderr, "No se pudo abrir el archivo %s.\n", (char *)s);
 	}
-	sub = inicializar(entrada);
+
+	inicializar(sub, entrada);
 	fclose(entrada);
-	return sub;
 }
 
 void salir(void *s, FILE **salida)
@@ -33,7 +32,7 @@ void modificar_salida(FILE **salida, struct arreglo_sub *arr_sub)
 	fclose(*salida);
 }
 
-struct arreglo_sub *borrar_indice(void *args, struct arreglo_sub *arr_sub)
+/*struct arreglo_sub *borrar_indice(void *args, struct arreglo_sub *arr_sub)
 {
 	int indice = (int *)args;
 
@@ -109,7 +108,7 @@ struct arreglo_sub *insertar(void *args, struct arreglo_sub *arreglo)
 	arreglo->ocupado += 1;
 	free(dato);
 	return arreglo;
-}
+}*/
 
 void validar(struct arreglo_sub *arr_sub)
 {
@@ -165,9 +164,9 @@ void validar(struct arreglo_sub *arr_sub)
 void process_operation(struct arreglo_opciones *optargs)
 {
 	FILE *entrada = NULL, *salida = NULL;
-	struct arreglo_sub *arr_sub;
+	struct arreglo_sub arr_sub;
 
-	for (int i = 0; i <= optargs->ocupado; i++)
+	for (int i = 0; i < optargs->ocupado; i++)
 	{
 		printf("Entrada nro: %d", i);
 		getchar();
@@ -176,48 +175,54 @@ void process_operation(struct arreglo_opciones *optargs)
 
 		case IN:
 			printf("Abriendo archivo...\n");
-			arr_sub = abrir(optargs->opciones[i].args, entrada);
-			continue;
+			//arr_sub = abrir(optargs->opciones[i].args, entrada);
+			abrir(&arr_sub, optargs->opciones[i].args, entrada);
+			break;
+			//continue;
 		case OUT:
 			printf("Abriendo archivo de salida...\n");
 			salir(optargs->opciones[i].args, &salida);
-			continue;
+			//continue;
+			break;
 		case BORRAR:
 			if (salida != NULL)
 			{
 				printf("Borrando...\n");
-				arr_sub = borrar_indice(optargs->opciones[i].args, arr_sub);
+				//arr_sub = borrar_indice(optargs->opciones[i].args, arr_sub);
 			}
 			else
 			{
 				printf("No se puede borrar, no hay archivo de salida.\n El argumento -o es obligatorio cuando hay opciones que modifican el archivo de entrada.");
 			}
-			continue;
+			break;
+			//continue;
 		case INSERTAR:
 			if (salida != NULL)
 			{
 				printf("Insertando...\n");
-				arr_sub = insertar(optargs->opciones[i].args, arr_sub);
+				//arr_sub = insertar(optargs->opciones[i].args, arr_sub);
 			}
 			else
 			{
 				printf("No se puede Insertar, no hay archivo de salida.\n El argumento -o es obligatorio cuando hay opciones que modifican el archivo de entrada.");
 			}
-			continue;
+			break;
+			//continue;
 		case VALIDAR:
 			printf("Validando...\n");
-			validar(arr_sub);
+			validar(&arr_sub);
 			continue;
 		}
 	}
+	
 	if (salida != NULL)
 	{
-		modificar_salida(&salida, arr_sub);
+		modificar_salida(&salida, &arr_sub);
 	}
-	for (size_t i = 0; i < arr_sub->ocupado; i++)
+
+	for (int i = 0; i < arr_sub.ocupado; i++)
 	{
-		free(arr_sub->a[i].texto);
+		free(arr_sub.a[i].texto);
 	}
-	free(arr_sub->a);
-	free(arr_sub);
+	free(arr_sub.a);
 }

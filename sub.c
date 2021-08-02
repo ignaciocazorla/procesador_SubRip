@@ -4,34 +4,29 @@
 #include "tiempo.h"
 
 // crea la estructura para manejar los datos del archivo
-struct arreglo_sub *init_arreglo(struct arreglo_sub *array, int initial_size)
+struct arreglo_sub *init_arreglo(struct arreglo_sub *arreglo)
 {
-	array->a = (struct sub *)calloc(1, initial_size * sizeof(struct sub));
-	array->tamanio = initial_size;
-	array->ocupado = 0;
-	return array;
+	struct arreglo_sub array = *arreglo;
+	array.a = NULL;
+	array.tamanio = 0;
+	array.ocupado = 0;
+	*arreglo = array;
 }
 
 // inserta un subtítulo en el arreglo de subtítulos en memoria
-struct arreglo_sub *insert_sub(struct arreglo_sub *array, struct sub *dato)
+void insert_sub(struct arreglo_sub *array, struct sub *dato)
 {
-	// si el arreglo de subtítulos está lleno, duplica su tamaño
-	if (array->ocupado == array->tamanio)
-	{
-		array->tamanio *= 2;
-		array->a = (struct sub *)realloc(array->a, array->tamanio * sizeof(struct sub));
-	}
-	// asigna el dato e incrementa la ocupación
-	array->a[array->ocupado++] = *dato;
-	return array;
+	// si el arreglo de subtítulos está lleno, aumenta en uno su tamaño
+	array->tamanio += 1;
+	array->a = (struct sub *)realloc(array->a, array->tamanio * sizeof(struct sub));
+	(*array).a[(*array).ocupado++] = *dato;
 }
 
 // llena el arreglo inicial con los subtítulos del archivo "entrada"
-struct arreglo_sub *inicializar(FILE *entrada)
+void inicializar(struct arreglo_sub * arreglo, FILE *entrada)
 {
 	// inicializa arreglo de subtítulos
-	struct arreglo_sub *arreglo = calloc(1, sizeof(struct arreglo_sub));
-	arreglo = init_arreglo(arreglo, 1);
+	init_arreglo(arreglo);
 
 	struct sub *dato;							// estructura de subtítulo auxiliar
 	char *texto = NULL;							// contenido del subtítulo
@@ -43,35 +38,33 @@ struct arreglo_sub *inicializar(FILE *entrada)
 	dato = calloc(1, sizeof(struct sub));
 
 	// empieza a leer
-
 	while (fscanf(entrada, "%d\n", &dato->indice) != EOF)
 	{
 		fscanf(entrada, "%d:%d:%d,%d --> %d:%d:%d,%d\n",
 			   &i_hh, &i_mm, &i_ss, &i_ms,
 			   &f_hh, &f_mm, &f_ss, &f_ms);
 
-		// convierte los datos numéricos a milisegundos
 		dato->inicio = tm_to_millisec(i_hh, i_mm, i_ss, i_ms);
 		dato->fin = tm_to_millisec(f_hh, f_mm, f_ss, f_ms);
 
 		// aloca el texto de entrada
-		dato->texto = malloc(sizeof(char) * 100);
+		dato->texto = (char *) malloc(sizeof(char));
+		*(dato->texto) = '\0';
 
 		// concatena hasta leer sólamente \n o \r\n
 		while ((len = getline(&texto, &len, entrada)) > 2)
 		{
+			dato->texto = (char *) realloc(dato->texto,strlen(dato->texto) + len + 1);
 			strcat(dato->texto, texto);
 		}
 
-		arreglo = insert_sub(arreglo, dato);
+		insert_sub(arreglo, dato);
 	}
 
 	// libera los punteros
 	free(dato);
 	if (texto != NULL)
 		free(texto);
-
-	return arreglo;
 }
 
 // crea el archivo de salida en base al arreglo de subtitulos

@@ -28,7 +28,8 @@ struct arreglo_sub{
 	int tamanio;
 };
 
-struct arreglo_sub * inicializar(FILE * entrada);
+//struct arreglo_sub * inicializar(FILE * entrada);
+void inicializar(struct arreglo_sub * sub, FILE * entrada);
 
 void crear_salida(struct arreglo_sub * sub,FILE ** salida);
 
