@@ -44,8 +44,8 @@ void inicializar(struct arreglo_sub * arreglo, FILE *entrada)
 			   &i_hh, &i_mm, &i_ss, &i_ms,
 			   &f_hh, &f_mm, &f_ss, &f_ms);
 
-		dato->inicio = tm_to_millisec(i_hh, i_mm, i_ss, i_ms);
-		dato->fin = tm_to_millisec(f_hh, f_mm, f_ss, f_ms);
+		dato->inicio = (size_t) tm_to_millisec(i_hh, i_mm, i_ss, i_ms);
+		dato->fin = (size_t) tm_to_millisec(f_hh, f_mm, f_ss, f_ms);
 
 		// aloca el texto de entrada
 		dato->texto = (char *) malloc(sizeof(char));
