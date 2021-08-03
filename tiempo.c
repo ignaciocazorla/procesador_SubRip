@@ -10,7 +10,7 @@
 
 }*/
 
-size_t * tm_to_millisec(short hs, short mins, short segs, short msegs) {
+size_t tm_to_millisec(short hs, short mins, short segs, short msegs) {
 
   size_t total = 0;
   if (hs != 0){

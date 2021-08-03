@@ -5,7 +5,6 @@
 #include <string.h>
 #include <stdarg.h>
 #include <errno.h>
-#include "funciones.h"
 #include "sub.h"
 
 #define BORRAR 		1
