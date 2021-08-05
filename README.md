@@ -1,6 +1,6 @@
 # Procesador de archivos SubRip
 
-Este programa fue presentado como trabajo final integrador para la materia Seminario de Lenguajes - Opción C (2018). 
+Este programa fue presentado como trabajo final integrador para la materia Seminario de Lenguajes - Opción C (2018), de la Facultad de Informática (UNLP). 
 
 El desarrollo consistió en implementar una aplicación, que manipule archivos de subtítulos en formato SubRip. 
 El formato SubRip es uno de los formatos de subtítulos para vídeos más difundidos y compatibles.
