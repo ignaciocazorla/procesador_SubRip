@@ -43,6 +43,11 @@ void agregar_sub(void ** s){
 	*s = sub;
 }
 
+void cadena_a_millisec(size_t * n, char * cadena){
+	char * cadena_num = cadena;
+	*n = atoi(cadena_num);
+}
+
 void insertar_opciones(struct arr * dato, int opt, int cantidad, ...){	
 	struct arr s_arr = *dato;
 
@@ -58,8 +63,8 @@ void insertar_opciones(struct arr * dato, int opt, int cantidad, ...){
 			break;
 		case INSERTAR:
 			agregar_sub(&s_arr.args);
-			cadena_a_entero((void *) &(((struct sub *) s_arr.args)->inicio) ,va_arg(ap,char *));
-			cadena_a_entero((void *) &(((struct sub *) s_arr.args)->fin),va_arg(ap,char *));
+			cadena_a_millisec((&((struct sub *) s_arr.args)->inicio) ,va_arg(ap,char *));
+			cadena_a_millisec((&((struct sub *) s_arr.args)->fin),va_arg(ap,char *));
 			agregar_cadena((void *) &(((struct sub *) s_arr.args)->texto),va_arg(ap,char *));
 			break;
 		case VALIDAR:
@@ -151,10 +156,6 @@ void recuperar_args(struct arreglo_opciones * arreglo_opciones, int argc, char *
 void liberar_opt_insertar(struct arr * dato){
 	void * s = dato->args;
 	struct sub * sub = (struct sub *) s;
-	int * inicio = (int *) sub->inicio;
-	int * fin = (int *) sub->fin;
-	free(inicio);
-	free(fin);
 	free(sub->texto);
 	free(sub);
 }

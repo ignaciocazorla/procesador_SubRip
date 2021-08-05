@@ -60,11 +60,16 @@ void borrar_indice(void *args, struct arreglo_sub *arr_sub)
 	}
 }
 
-/*struct arreglo_sub *insertar(void *args, struct arreglo_sub *arreglo)
+/*struct arreglo_sub *insertar(void *args, struct arreglo_sub *arreglo)*/
+void insertar(void *args, struct arreglo_sub *arreglo)
 {
 
 	struct sub *dato = (struct sub *)args;
-	int j;
+	printf("DATO->INICIO: %ld\n", dato->inicio);
+	printf("DATO->FIN: %ld\n", dato->fin);
+	printf("DATO->TEXTO: %s\n", dato->texto);
+
+	/*int j;
 
 	if (arreglo->ocupado == arreglo->tamanio)
 	{
@@ -98,9 +103,8 @@ void borrar_indice(void *args, struct arreglo_sub *arr_sub)
 	arreglo->a[j] = *dato;
 	printf("Indice:%d  \n Texto: %s \n", arreglo->a[j].indice, arreglo->a[j].texto);
 	arreglo->ocupado += 1;
-	free(dato);
-	return arreglo;
-}*/
+	free(dato);*/
+}
 
 void validar(struct arreglo_sub *arr_sub)
 {
@@ -192,7 +196,7 @@ void process_operation(struct arreglo_opciones *optargs)
 			if (salida != NULL)
 			{
 				printf("Insertando...\n");
-				//arr_sub = insertar(optargs->opciones[i].args, arr_sub);
+				insertar(optargs->opciones[i].args, &arr_sub);
 			}
 			else
 			{

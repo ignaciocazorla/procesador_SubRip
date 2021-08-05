@@ -4,7 +4,7 @@
 #include "tiempo.h"
 
 // crea la estructura para manejar los datos del archivo
-struct arreglo_sub *init_arreglo(struct arreglo_sub *arreglo)
+void init_arreglo(struct arreglo_sub *arreglo)
 {
 	struct arreglo_sub array = *arreglo;
 	array.a = NULL;
