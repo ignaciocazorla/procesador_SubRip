@@ -77,25 +77,21 @@ void insertar(void *args, struct arreglo_sub *arreglo)
 {
 
 	struct sub *dato = (struct sub *)args;
-	printf("DATO->INICIO: %ld\n", dato->inicio);
-	printf("DATO->FIN: %ld\n", dato->fin);
-	printf("DATO->TEXTO: %s\n", dato->texto);
-
-	/*int j;
+	int j;
 
 	if (arreglo->ocupado == arreglo->tamanio)
 	{
 		arreglo->a = (struct sub *)realloc(arreglo->a, arreglo->tamanio * sizeof(struct sub) + 1 * sizeof(struct sub));
 	}
 
-	if (dato->fin < arreglo->a[0].inicio)
+	if (dato->inicio <= arreglo->a[0].inicio)
 	{
 		j = 0;
 	}
 	else
 	{
 		j = 1;
-		while (j < arreglo->ocupado && dato->inicio > arreglo->a[j].fin)
+		while (j < arreglo->ocupado && dato->inicio > arreglo->a[j].inicio)
 		{
 			j++;
 		}
@@ -104,18 +100,16 @@ void insertar(void *args, struct arreglo_sub *arreglo)
 	{
 		for (int i = arreglo->ocupado; i >= j; i--)
 		{
-			arreglo->a[i].indice = arreglo->a[i].indice + 1;
+			arreglo->a[i].indice += 1;
 			arreglo->a[i + 1] = arreglo->a[i];
 		}
 		dato->texto = realloc(dato->texto, strlen(dato->texto) + sizeof(char));
-		strcat(dato->texto, '\n');
+		strcat(dato->texto, "\n");
 	}
 
 	dato->indice = j + 1;
 	arreglo->a[j] = *dato;
-	printf("Indice:%d  \n Texto: %s \n", arreglo->a[j].indice, arreglo->a[j].texto);
 	arreglo->ocupado += 1;
-	free(dato);*/
 }
 
 void validar(struct arreglo_sub *arr_sub)
