@@ -27,7 +27,7 @@ void init_arch_salida(void *filename, FILE **salida)
 // Almacena en el archivo de salida las modificaciones realizadas.
 void escribir_salida(FILE **salida, struct arreglo_sub *arr_sub)
 {
-	if (salida != NULL){
+	if (*salida != NULL){
 		crear_salida(arr_sub, salida);
 		fclose(*salida);
 	}
