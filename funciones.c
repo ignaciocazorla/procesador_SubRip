@@ -112,10 +112,22 @@ void insertar(void *args, struct arreglo_sub *arreglo)
 	arreglo->ocupado += 1;
 }
 
+size_t primer_indice_valido(struct arreglo_sub *arr_sub)
+{
+	size_t i = 0;
+
+	while(arr_sub->a[i].indice == -1){
+		i++;
+	}
+	if (arr_sub->a[i].indice != 1){
+		return -1;
+	}
+	return 1;
+}
+
 void validar(struct arreglo_sub *arr_sub)
 {
-
-	if ((arr_sub->a[0].indice) != 1)
+	if (primer_indice_valido(arr_sub) == -1)
 	{
 		error(1, "El primer indice no es 1.");
 	}
@@ -124,39 +136,41 @@ void validar(struct arreglo_sub *arr_sub)
 	//se trabaja con un sub
 	for (int i = 0; i < arr_sub->ocupado; i++)
 	{
-		int total_carac = procesar_texto(arr_sub->a[i].texto, arr_sub->a[i].indice);
-		if (minimo_duracion_sub(arr_sub->a[i].inicio, arr_sub->a[i].fin) == 1)
-		{
-			error(arr_sub->a[i].indice, "El subtitulo dura menos de 1 seg.");
-		}
-
-		if (maximo_duracion_sub(arr_sub->a[i].inicio, arr_sub->a[i].fin))
-		{
-			error(arr_sub->a[i].indice, "El subtitulo dura mas de 7 seg.");
-		}
-
-		if (chars_por_seg(total_carac, arr_sub->a[i].inicio, arr_sub->a[i].fin))
-		{
-			error(arr_sub->a[i].indice, "El subtitulo tiene demasiados caracteres por segundo.");
-		}
-		if (i != arr_sub->ocupado - 1)
-		{
-
-			if ((arr_sub->a[i].indice + 1) != arr_sub->a[i + 1].indice)
+		if (arr_sub->a[i].indice != -1){
+			int total_carac = procesar_texto(arr_sub->a[i].texto, arr_sub->a[i].indice);
+			if (minimo_duracion_sub(arr_sub->a[i].inicio, arr_sub->a[i].fin) == 1)
 			{
-				error(arr_sub->a[i].indice, "Los indices no son consecutivos ordenados.");
+				error(arr_sub->a[i].indice, "El subtitulo dura menos de 1 seg.");
 			}
 
-			if (solapados_sub(arr_sub->a[i].fin, arr_sub->a[i + 1].inicio) == 1)
+			if (maximo_duracion_sub(arr_sub->a[i].inicio, arr_sub->a[i].fin))
 			{
-				error(arr_sub->a[i].indice, "El subtitulo esta solapado con el siguiente.");
+				error(arr_sub->a[i].indice, "El subtitulo dura mas de 7 seg.");
 			}
-			else
+
+			if (chars_por_seg(total_carac, arr_sub->a[i].inicio, arr_sub->a[i].fin))
+			{
+				error(arr_sub->a[i].indice, "El subtitulo tiene demasiados caracteres por segundo.");
+			}
+			if (i != arr_sub->ocupado - 1)
 			{
 
-				if (separacion_sub(arr_sub->a[i].fin, arr_sub->a[i].inicio))
+				if ((arr_sub->a[i].indice + 1) != arr_sub->a[i + 1].indice)
 				{
-					error(arr_sub->a[i].indice, "Hay menos de 75 ms. entre el subtitulo y el siguiente.");
+					error(arr_sub->a[i].indice, "Los indices no son consecutivos ordenados.");
+				}
+
+				if (solapados_sub(arr_sub->a[i].fin, arr_sub->a[i + 1].inicio) == 1)
+				{
+					error(arr_sub->a[i].indice, "El subtitulo esta solapado con el siguiente.");
+				}
+				else
+				{
+
+					if (separacion_sub(arr_sub->a[i].fin, arr_sub->a[i].inicio))
+					{
+						error(arr_sub->a[i].indice, "Hay menos de 75 ms. entre el subtitulo y el siguiente.");
+					}
 				}
 			}
 		}
