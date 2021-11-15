@@ -51,9 +51,20 @@ int comparar(const void * key, const void * sub){
 // Borra un indice y ordena los siguientes restandoles uno.
 void borrar_indice(void *args, struct arreglo_sub *arr_sub)
 {
+	int j = 0;
 	int indice = (*(int *) args);
+	struct sub * s = NULL;
 
-	struct sub * s = bsearch(&indice, arr_sub->a, arr_sub->ocupado, sizeof(struct sub), comparar);
+	//struct sub * s = bsearch(&indice, arr_sub->a, arr_sub->ocupado, sizeof(struct sub), comparar);
+	
+	// Recorre linealmente todas las posiciones hasta encontrar el indice
+	// o hasta que se termine el arreglo.
+	while (j < arr_sub->ocupado){
+		if(indice == arr_sub->a[j].indice){
+			s = &arr_sub->a[j];
+		}
+		j++;
+	}
 
 	// Se calcula el indice siguiente a s, para poder modificar el resto de 
 	// los indices, restandole 1 a cada uno.
@@ -62,10 +73,13 @@ void borrar_indice(void *args, struct arreglo_sub *arr_sub)
 	if(s != NULL){
 		// aplica borrado logico
 		s->indice = -1;
+
 		// se modifica el resto de los indices.
 		for (; i < arr_sub->ocupado; i++)
 		{
-			arr_sub->a[i].indice -= 1;
+			if(arr_sub->a[i].indice != -1){
+				arr_sub->a[i].indice -= 1;
+			}
 		}
 	}else{
 		printf("No se encontro el indice a borrar.\n");
@@ -112,14 +126,15 @@ void insertar(void *args, struct arreglo_sub *arreglo)
 	arreglo->ocupado += 1;
 }
 
-size_t primer_indice_valido(struct arreglo_sub *arr_sub)
+int primer_indice_valido(struct arreglo_sub *arr_sub)
 {
-	size_t i = 0;
+	int i = 0;
 
-	while(arr_sub->a[i].indice == -1){
+	while(arr_sub->tamanio > i && arr_sub->a[i].indice == -1){
 		i++;
 	}
-	if (arr_sub->a[i].indice != 1){
+
+	if (arr_sub->tamanio > i && arr_sub->a[i].indice != 1){
 		return -1;
 	}
 	return 1;
@@ -132,8 +147,7 @@ void validar(struct arreglo_sub *arr_sub)
 		error(1, "El primer indice no es 1.");
 	}
 
-	printf("%d\n", minimo_duracion_sub(90, 10));
-	//se trabaja con un sub
+	//se trabaja con un sub. Se recorren los subtitulos desde el primero.
 	for (int i = 0; i < arr_sub->ocupado; i++)
 	{
 		if (arr_sub->a[i].indice != -1){

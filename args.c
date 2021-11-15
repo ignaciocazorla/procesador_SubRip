@@ -156,7 +156,6 @@ void recuperar_args(struct arreglo_opciones * arreglo_opciones, int argc, char *
 void liberar_opt_insertar(struct arr * dato){
 	void * s = dato->args;
 	struct sub * sub = (struct sub *) s;
-	free(sub->texto);
 	free(sub);
 }
 
